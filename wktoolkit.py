@@ -4,7 +4,8 @@ import argparse
 import keyring
 import sys
 
-from session.session import Session
+from interface.interface import Interface
+from session.session import Session, BASE_URL
 
 WKTOOLKIT_KEYRING_SERVICE = 'wktoolkit'
 
@@ -46,10 +47,12 @@ def main():
     token = args.token
 
   session = Session(token)
+  if not session:
+    sys.exit(1)
 
-  if session:
-    print(session)
-
+  interface = Interface(session, BASE_URL)
+  level = interface.get_current_level()
+  print(level)
 
 if __name__ == "__main__":
   main()
