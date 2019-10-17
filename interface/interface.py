@@ -3,23 +3,12 @@ An interface to and abstraction over the WaniKani V2 API.
 """
 
 import requests
-from datetime import datetime
 from urllib.parse import urljoin
 
 from interface.level import Level
 from interface.subjects import Subjects, Vocabulary
+from interface.time import wk_to_datetime
 
-# Used to parse dates such as: 2019-09-24T01:58:43.171547Z
-TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-
-def wk_time(time):
-  """
-  Convert from the WaniKani time representation in the V2 API to a datetime.
-
-  @p time A timestamp string as presented in a WaniKani V2 API result.
-  @return A datetime equivalent or None if time is None.
-  """
-  return datetime.strptime(time, TIME_FORMAT) if time else None
 
 class Interface():
   def __init__(self, session, base_url):
@@ -42,10 +31,10 @@ class Interface():
     data = data['data'][-1]
     return Level(int(data['data']['level']),
                  int(data['id']),
-                 wk_time(data['data']['unlocked_at']),
-                 wk_time(data['data']['started_at']),
-                 wk_time(data['data']['passed_at']),
-                 wk_time(data['data']['abandoned_at']))
+                 wk_to_datetime(data['data']['unlocked_at']),
+                 wk_to_datetime(data['data']['started_at']),
+                 wk_to_datetime(data['data']['passed_at']),
+                 wk_to_datetime(data['data']['abandoned_at']))
 
   def get_subjects(self, radicals=True, kanji=True,
                    vocabulary=True, level=0):
