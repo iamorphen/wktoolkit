@@ -7,6 +7,7 @@ from datetime import datetime
 from urllib.parse import urljoin
 
 from interface.level import Level
+from interface.subjects import Subjects, Vocabulary
 
 # Used to parse dates such as: 2019-09-24T01:58:43.171547Z
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -45,6 +46,56 @@ class Interface():
                  wk_time(data['data']['started_at']),
                  wk_time(data['data']['passed_at']),
                  wk_time(data['data']['abandoned_at']))
+
+  def get_subjects(self, radicals=True, kanji=True,
+                   vocabulary=True, level=0):
+    """
+    Fetch subjects from WaniKani. By default, all subject types are fetched for
+    all levels.
+
+    @p radicals (bool) Indicates whether radicals should be fetched.
+    @p kanji (bool) Indicates whether kanji should be fetched.
+    @p vocabulary (bool) Indicates whether vocabulary should be fetched.
+    @p level (int) [0-60] Inidcates which level to fetch subjects for.
+      0 is the default and results in querying for subjects of all levels.
+    @return An instance of subjects.Subjects.
+    """
+    params = {}
+
+    params['types'] = []
+    if radicals:
+      params['types'].append('radical')
+    if kanji:
+      params['types'].append('kanji')
+    if vocabulary:
+      params['types'].append('vocabulary')
+
+    if level > 0:
+      if level > 60:
+        params['levels'] = '60'
+      else:
+        params['levels'] = str(level)
+    else:
+      raise NotImplementedError(
+        'Fetching subjects for all levels is currently not supported.')
+
+    subjects = Subjects([], [], [])
+    data = self._get('subjects', params=params)
+
+    if data:
+      data = data['data']
+
+      for item in data:
+        if item['object'] == 'radical':
+          # TODO(orphen)
+          pass
+        if item['object'] == 'kanji':
+          # TODO(orphen)
+          pass
+        if item['object'] == 'vocabulary':
+          subjects.vocabulary.append(Vocabulary(item))
+
+    return subjects
 
   def _get(self, resource, params=None, hdrs=None):
     """
