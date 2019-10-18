@@ -31,8 +31,12 @@ def main():
   interface = Interface(session, BASE_URL)
   subjects = interface.get_subjects(args.radical, args.kanji, args.vocabulary,
                                     args.level)
-  for item in subjects.vocabulary:
-    print(item)
+  for radical in subjects.radicals:
+    print(radical)
+  for kanji in subjects.kanji:
+    print(kanji)
+  for vocabulary in subjects.vocabulary:
+    print(vocabulary)
 
 if __name__ == "__main__":
   main()

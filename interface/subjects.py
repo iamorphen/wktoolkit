@@ -9,36 +9,115 @@ from collections import namedtuple
 # radicals, kanji, and vocabulary shall be lists of the following classes.
 Subjects = namedtuple('Subjects', ['radicals', 'kanji', 'vocabulary'])
 
-class Radical:
-  def __init__(self):
-    pass
 
-
-class Kanji:
-  def __init__(self):
-    pass
-
-
-class Vocabulary:
+class Subject:
   def __init__(self, item):
     """
-    @p item A dictionary derived from a JSON vocabulary object retrieved
-      through the WaniKani V2 API.
+    A base class for subjects.
+
+    @p item A dictionary derived from a JSON subject object retrieved through
+      the WaniKani V2 API.
     """
     data = item['data']
 
     self.id = item['id']
     self.document_url = data['document_url']
     self.level = data['level']
-    self.characters = data['characters']
-    self.meanings = []  # TODO(orphen)
-    self.aux_meanings = []  # TODO(orphen)
-    self.readings = []  # TODO(orphen)
-    self.parts_of_speech = []  # TODO(orphen)
-    self.meaning_mneumonic = data['meaning_mnemonic']
-    self.reading_mneumonic = data['reading_mnemonic']
-    self.sentences = []  # TODO(orphen)
+
+    self.meanings = []
+    for meaning in data['meanings']:
+      self.meanings.append(meaning['meaning'])
+
+    self.aux_meanings = []
+    for aux_meaning in data['auxiliary_meanings']:
+      self.aux_meanings.append(meaning['meaning'])
+
+    self.meaning_mnemonic = data['meaning_mnemonic']
+
+
+class Radical(Subject):
+  def __init__(self, item):
+    """
+    @p item A dictionary derived from a JSON radical object retrieved through
+      the WaniKani V2 API.
+    """
+    super().__init__(item)
+
+    self.characters = ''  # TODO(orphen) Store the radical's vector graphic.
 
   def __str__(self):
-    return ('Characters: {}; Level: {}; ID: {}'
-           ).format(self.characters, self.level, self.id)
+    return ('Radical; Meanings: {}; Level: {}; ID: {}'
+           ).format(', '.join(self.meanings), self.level, self.id)
+
+
+class Kanji(Subject):
+  class Readings:
+    def __init__(self):
+      self.onyomi = list()
+      self.kunyomi = list()
+      self.nanori = list()
+
+    def __str__(self):
+      return 'O: {}; K: {}; N: {}'.format(', '.join(self.onyomi),
+        ', '.join(self.kunyomi), ', '.join(self.nanori))
+
+
+  def __init__(self, item):
+    """
+    @p item A dictionary derived from a JSON kanji object retrieved through
+      the WaniKani V2 API.
+    """
+    super().__init__(item)
+    data = item['data']
+
+    self.characters = data['characters']
+    self.readings = self.Readings()
+    for reading in data['readings']:
+      if reading['type'] == 'onyomi':
+        self.readings.onyomi.append(reading['reading'])
+      if reading['type'] == 'kunyomi':
+        self.readings.kunyomi.append(reading['reading'])
+      if reading['type'] == 'nanori':
+        self.readings.nanori.append(reading['reading'])
+
+    self.reading_mnemonic = data['reading_mnemonic']
+
+  def __str__(self):
+    return ('Kanji; Character: {}; Meanings: {}; Readings: {}; Level: {}; '
+            'ID: {}').format(self.characters, ', '.join(self.meanings),
+                             str(self.readings), self.level, self.id)
+
+
+class Vocabulary(Subject):
+  Sentence = namedtuple('Sentence', ['en', 'ja'])
+
+
+  def __init__(self, item):
+    """
+    @p item A dictionary derived from a JSON vocabulary object retrieved
+      through the WaniKani V2 API.
+    """
+    super().__init__(item)
+    data = item['data']
+
+    self.characters = data['characters']
+
+    self.readings = list()
+    for reading in data['readings']:
+      self.readings.append(reading['reading'])
+
+    self.parts_of_speech = list()
+    for part in data['parts_of_speech']:
+      self.parts_of_speech.append(part)
+
+    self.reading_mnemonic = data['reading_mnemonic']
+
+    self.sentences = list()
+    for sentence in data['context_sentences']:
+      self.sentences.append(self.Sentence(sentence['en'], sentence['ja']))
+
+  def __str__(self):
+    return ('Vocabulary; Characters: {}; Meanings: {}; Readings: {}; '
+            'Level: {}; ID: {}'
+           ).format(self.characters, ', '.join(self.meanings),
+                    ', '.join(self.readings), self.level, self.id)

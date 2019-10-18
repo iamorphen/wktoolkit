@@ -6,7 +6,7 @@ import requests
 from urllib.parse import urljoin
 
 from interface.level import Level
-from interface.subjects import Subjects, Vocabulary
+from interface.subjects import Subjects, Radical, Kanji, Vocabulary
 from interface.time import wk_to_datetime
 
 
@@ -76,11 +76,9 @@ class Interface():
 
       for item in data:
         if item['object'] == 'radical':
-          # TODO(orphen)
-          pass
+          subjects.radicals.append(Radical(item))
         if item['object'] == 'kanji':
-          # TODO(orphen)
-          pass
+          subjects.kanji.append(Kanji(item))
         if item['object'] == 'vocabulary':
           subjects.vocabulary.append(Vocabulary(item))
 
