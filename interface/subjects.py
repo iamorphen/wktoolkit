@@ -11,13 +11,16 @@ Subjects = namedtuple('Subjects', ['radicals', 'kanji', 'vocabulary'])
 
 
 class Subject:
-  def __init__(self, item):
+  def __init__(self, item, store_json):
     """
     A base class for subjects.
 
-    @p item A dictionary derived from a JSON subject object retrieved through
+    @p item (dict) A dictionary of the JSON subject object retrieved through
       the WaniKani V2 API.
+    @p store_json (bool) If true, store @p item in this instance.
     """
+    self.json = item if store_json else None
+
     data = item['data']
 
     self.id = item['id']
@@ -36,12 +39,13 @@ class Subject:
 
 
 class Radical(Subject):
-  def __init__(self, item):
+  def __init__(self, item, store_json):
     """
-    @p item A dictionary derived from a JSON radical object retrieved through
+    @p item (dict) A dictionary of the JSON radical object retrieved through
       the WaniKani V2 API.
+    @p store_json (bool) If true, store @p item in this instance.
     """
-    super().__init__(item)
+    super().__init__(item, store_json)
 
     self.characters = ''  # TODO(orphen) Store the radical's vector graphic.
 
@@ -62,12 +66,13 @@ class Kanji(Subject):
         ', '.join(self.kunyomi), ', '.join(self.nanori))
 
 
-  def __init__(self, item):
+  def __init__(self, item, store_json):
     """
-    @p item A dictionary derived from a JSON kanji object retrieved through
+    @p item (dict) A dictionary of the JSON kanji object retrieved through
       the WaniKani V2 API.
+    @p store_json (bool) If true, store @p item in this instance.
     """
-    super().__init__(item)
+    super().__init__(item, store_json)
     data = item['data']
 
     self.characters = data['characters']
@@ -92,12 +97,13 @@ class Vocabulary(Subject):
   Sentence = namedtuple('Sentence', ['en', 'ja'])
 
 
-  def __init__(self, item):
+  def __init__(self, item, store_json):
     """
-    @p item A dictionary derived from a JSON vocabulary object retrieved
+    @p item (dict) A dictionary of the JSON vocabulary object retrieved
       through the WaniKani V2 API.
+    @p store_json (bool) If true, store @p item in this instance.
     """
-    super().__init__(item)
+    super().__init__(item, store_json)
     data = item['data']
 
     self.characters = data['characters']

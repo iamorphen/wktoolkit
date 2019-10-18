@@ -37,7 +37,7 @@ class Interface():
                  wk_to_datetime(data['data']['abandoned_at']))
 
   def get_subjects(self, radicals=True, kanji=True,
-                   vocabulary=True, level=0):
+                   vocabulary=True, level=0, store_json=False):
     """
     Fetch subjects from WaniKani. By default, all subject types are fetched for
     all levels.
@@ -47,6 +47,7 @@ class Interface():
     @p vocabulary (bool) Indicates whether vocabulary should be fetched.
     @p level (int) [0-60] Inidcates which level to fetch subjects for.
       0 is the default and results in querying for subjects of all levels.
+    @p store_json (bool) Store the original, raw JSON in each subject's object.
     @return An instance of subjects.Subjects.
     """
     params = {}
@@ -76,11 +77,11 @@ class Interface():
 
       for item in data:
         if item['object'] == 'radical':
-          subjects.radicals.append(Radical(item))
+          subjects.radicals.append(Radical(item, store_json))
         if item['object'] == 'kanji':
-          subjects.kanji.append(Kanji(item))
+          subjects.kanji.append(Kanji(item, store_json))
         if item['object'] == 'vocabulary':
-          subjects.vocabulary.append(Vocabulary(item))
+          subjects.vocabulary.append(Vocabulary(item, store_json))
 
     return subjects
 
