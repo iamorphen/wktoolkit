@@ -4,6 +4,7 @@ retrieve a user API key based on a username.
 """
 
 import keyring
+import sys
 
 WKTOOLKIT_KEYRING_SERVICE = 'wktoolkit'
 
