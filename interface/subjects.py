@@ -107,6 +107,16 @@ class Kanji(Subject):
       self.kunyomi = list()
       self.nanori = list()
 
+    def to_anki(self):
+      onyomi = ', '.join(self.onyomi) if len(self.onyomi) else 'None'
+      kunyomi = ', '.join(self.kunyomi) if len(self.kunyomi) else 'None'
+      nanori = ', '.join(self.nanori) if len(self.nanori) else 'None'
+      return Kanji.ANKI_SEPARATOR.join((onyomi, kunyomi, nanori))
+
+    @staticmethod
+    def anki_schema():
+      return ' '.join(('onyomi', 'kunyomi', 'nanori'))
+
     def __str__(self):
       return 'O: {}; K: {}; N: {}'.format(', '.join(self.onyomi),
         ', '.join(self.kunyomi), ', '.join(self.nanori))
@@ -143,16 +153,17 @@ class Kanji(Subject):
     @return (str) a tab-separated list of our members.
     """
     anki = super().to_anki()
-    # TODO(orphen)
-    return anki
+    return self.ANKI_SEPARATOR.join((anki, self.characters,
+                                     self.readings.to_anki(),
+                                     self.reading_mnemonic))
 
   @staticmethod
   def anki_schema():
     """
     @return (str) Our members in order of appearance in to_anki().
     """
-    return ' '.join((Subject.anki_schema(), 'characters', 'readings',
-                     'reading_mnemonic'))
+    return ' '.join((Subject.anki_schema(), 'characters',
+                     Kanji.Readings.anki_schema(), 'reading_mnemonic'))
 
   def __str__(self):
     return ('Kanji; Character: {}; Meanings: {}; Readings: {}; Level: {}; '
