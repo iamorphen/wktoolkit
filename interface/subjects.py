@@ -54,11 +54,12 @@ class Subject:
     # the first (comma, semicolon, tab) it sees as the separator. Therefore,
     # the first member we add to the string should not itself contain any
     # character that can be confused as a separator.
-    return str(self.ANKI_SEPARATOR.join((str(self.id), self.document_url,
-                                         str(self.level),
-                                         ', '.join(self.meanings),
-                                         ', '.join(self.aux_meanings),
-                                         self.meaning_mnemonic)))
+    s = self.ANKI_SEPARATOR.join((str(self.id), self.document_url,
+                                  str(self.level),
+                                  ', '.join(self.meanings),
+                                  ', '.join(self.aux_meanings),
+                                  self.meaning_mnemonic))
+    return s.replace('\r\n', ' ')
 
   @staticmethod
   def anki_schema():
@@ -86,7 +87,8 @@ class Radical(Subject):
     @return (str) a tab-separated list of our members.
     """
     anki = super().to_anki()
-    return self.ANKI_SEPARATOR.join((anki, 'characters_not_implemented'))
+    s = self.ANKI_SEPARATOR.join((anki, 'characters_not_implemented'))
+    return s.replace('\r\n', ' ')
 
   @staticmethod
   def anki_schema():
@@ -96,8 +98,8 @@ class Radical(Subject):
     return ' '.join((Subject.anki_schema(), 'characters'))
 
   def __str__(self):
-    return ('Radical; Meanings: {}; Level: {}; ID: {}'
-           ).format(', '.join(self.meanings), self.level, self.id)
+    return ('Radical; Meanings: {}; Level: {}; ID: {}').format(
+            ', '.join(self.meanings), self.level, self.id)
 
 
 class Kanji(Subject):
@@ -153,9 +155,10 @@ class Kanji(Subject):
     @return (str) a tab-separated list of our members.
     """
     anki = super().to_anki()
-    return self.ANKI_SEPARATOR.join((anki, self.characters,
-                                     self.readings.to_anki(),
-                                     self.reading_mnemonic))
+    s = self.ANKI_SEPARATOR.join((anki, self.characters,
+                                  self.readings.to_anki(),
+                                  self.reading_mnemonic))
+    return s.replace('\r\n', ' ')
 
   @staticmethod
   def anki_schema():
@@ -207,9 +210,21 @@ class Vocabulary(Subject):
     """
     @return (str) a tab-separated list of our members.
     """
+    sentences = ''
+    first = True
+    for sentence in self.sentences:
+      if not first:
+        sentences += '<br>'
+      first = False
+      sentences += '<br>'.join((sentence.en, sentence.ja))
+
     anki = super().to_anki()
-    # TODO(orphen)
-    return anki
+    s = self.ANKI_SEPARATOR.join((anki, self.characters,
+                                  ', '.join(self.readings),
+                                  ', '.join(self.parts_of_speech),
+                                  self.reading_mnemonic,
+                                  sentences))
+    return s.replace('\r\n', ' ')
 
   @staticmethod
   def anki_schema():
