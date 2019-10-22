@@ -25,8 +25,8 @@ class Subject:
       the WaniKani V2 API.
     @p store_json (bool) If true, store @p item in this instance.
     """
-    # The definition of members is important. We take the order of definition
-    # to be the order in which our members are written out in the Anki schema.
+    # The order of members is important. We take the order of definition to be
+    # the order in which our members are written out in the Anki schema.
 
     data = item['data']
 
@@ -76,8 +76,8 @@ class Radical(Subject):
       the WaniKani V2 API.
     @p store_json (bool) If true, store @p item in this instance.
     """
-    # The definition of members is important. We take the order of definition
-    # to be the order in which our members are written out in the Anki schema.
+    # The order of members is important. We take the order of definition to be
+    # the order in which our members are written out in the Anki schema.
 
     super().__init__(item, store_json)
     self.characters = ''  # TODO(orphen) Store the radical's vector graphic.
@@ -130,8 +130,8 @@ class Kanji(Subject):
       the WaniKani V2 API.
     @p store_json (bool) If true, store @p item in this instance.
     """
-    # The definition of members is important. We take the order of definition
-    # to be the order in which our members are written out in the Anki schema.
+    # The order of members is important. We take the order of definition to be
+    # the order in which our members are written out in the Anki schema.
 
     super().__init__(item, store_json)
 
@@ -184,8 +184,8 @@ class Vocabulary(Subject):
       through the WaniKani V2 API.
     @p store_json (bool) If true, store @p item in this instance.
     """
-    # The definition of members is important. We take the order of definition
-    # to be the order in which our members are written out in the Anki schema.
+    # The order of members is important. We take the order of definition to be
+    # the order in which our members are written out in the Anki schema.
 
     super().__init__(item, store_json)
 
