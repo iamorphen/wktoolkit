@@ -1,0 +1,19 @@
+# Tampermonkey Scripts
+Scripts in this directory are to be loaded by Tampermonkey and interact with the content on WaniKani.
+
+# Dependencies
+* Modern Tampermonkey
+
+# Local Development
+To ease local development of these scripts:
+1. Open a script in your editor of choice.
+1. Cut the userscript header.
+1. Add a script to Tampermonkey which will load your script from your local machine.
+1. In your browser's extension properties, enable reading files from disk for Tampermonkey.
+1. In your in-browser Tampermonkey script, paste the userscript header cut in an earlier step.
+1. Add `// @require      file://<full_path_to_file_on_your_disk>` to the in-browser userscript header.
+
+# Scripts
+| Script | Use |
+| ------ | --- |
+| `context_sentence_blurrer` | Blurs the vocabulary context sentences in lessons. |
