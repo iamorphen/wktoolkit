@@ -203,8 +203,10 @@ class Vocabulary(Subject):
     for part in data['parts_of_speech']:
       self.parts_of_speech.append(part)
 
+    # WaniKani inconsistently ends sentences with a newline.
     for sentence in data['context_sentences']:
-      self.sentences.append(self.Sentence(sentence['en'], sentence['ja']))
+      self.sentences.append(self.Sentence(sentence['en'].rstrip('\n'),
+                                          sentence['ja'].rstrip('\n')))
 
   def to_anki(self):
     """
