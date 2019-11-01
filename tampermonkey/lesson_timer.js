@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WaniKani Lesson Timer
 // @namespace    https://wanikani.com
-// @version      0.1
+// @version      1.0
 // @description  Display a timer in lessons
 // @author       orphen
 // @match        https://www.wanikani.com/lesson/session
@@ -13,6 +13,7 @@
 
   // TODO(orphen) Add persistent state for the configuration of the timer element.
   // TODO(orphen) Add total elapsed time to end-of-lesson page.
+  // TODO(orphen) Save lesson timing statistics in persistent storage.
 
   const IDPrefix = 'wktk-lesson-timer';
 
@@ -38,23 +39,25 @@
     }
   };
 
-  const TimerOff = new TimerBehavior(() => { document.getElementById(`${IDPrefix}-li`).innerHTML = '[Timer Off]'; },
-                                     false);
-  const TimerHidden = new TimerBehavior(
-    () => { document.getElementById(`${IDPrefix}-li`).innerHTML = '[Timer Hidden]'; }, false);
-  const TimerLive = new TimerBehavior(
-    () => {
+  const TimerOff = () => { document.getElementById(`${IDPrefix}-li`).innerHTML = '[Timer Off]'; };
+  const TimerHidden = () => { document.getElementById(`${IDPrefix}-li`).innerHTML = '[Timer Hidden]'; };
+  const TimerUpdate = () => {
       let dt_s = (Date.now() - StartTime) / 1e3;
       let seconds = Math.trunc(dt_s % 60).toString().padStart(2, 0);
       let minutes = Math.trunc(dt_s / 60).toString().padStart(2, 0);
       document.getElementById(`${IDPrefix}-li`).innerHTML = `[${minutes} m ${seconds} s]`;
-    }, true);
+  };
 
   class TimerManager {
+    instance = null; // This class is a non-extensible singleton.
+
     /**
      * @p behaviors An array of TimerBehavior objects.
      */
     constructor(behaviors) {
+      if (TimerManager.instance) { return TimerManager.instance; }
+
+      TimerManager.instance = this;
       this.behaviors = behaviors;
       this.behaviorIndex = null;
       this.behaviorIntervalHandle = null;
@@ -63,17 +66,13 @@
     nextBehavior() {
       if (this.behaviorIndex == null) {
         this.behaviorIndex = 0;
-        this.behaviors[this.behaviorIndex].behavior();
-        if (this.behaviors[this.behaviorIndex].recurring) {
-          this.behaviorIntervalHandle = setInterval(this.behaviors[this.behaviorIndex].behavior, 1e3);
-        }
       } else {
         if (this.behaviorIntervalHandle) { clearInterval(this.behaviorIntervalHandle); }
         this.behaviorIndex = (this.behaviorIndex + 1) % this.behaviors.length;
-        this.behaviors[this.behaviorIndex].behavior();
-        if (this.behaviors[this.behaviorIndex].recurring) {
-          this.behaviorIntervalHandle = setInterval(this.behaviors[this.behaviorIndex].behavior, 1e3);
-        }
+      }
+      this.behaviors[this.behaviorIndex].behavior();
+      if (this.behaviors[this.behaviorIndex].recurring) {
+        this.behaviorIntervalHandle = setInterval(this.behaviors[this.behaviorIndex].behavior, 1e3);
       }
     }
   };
@@ -89,7 +88,8 @@
     document.getElementById(`${IDPrefix}-li`).onclick = event => { timer_manager.nextBehavior(); };
   };
 
-  const timer_manager = new TimerManager([TimerOff, TimerHidden, TimerLive]);
+  const timer_manager = new TimerManager([new TimerBehavior(TimerOff, false), new TimerBehavior(TimerHidden, false),
+                                          new TimerBehavior(TimerUpdate, true)]);
   AddTimerElement(timer_manager);
   timer_manager.nextBehavior();
 })();
