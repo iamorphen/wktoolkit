@@ -17,3 +17,4 @@ To ease local development of these scripts:
 | Script | Use |
 | ------ | --- |
 | `context_sentence_blurrer` | Blurs the vocabulary context sentences in lessons. |
+| `lesson_timer` | A configurable timer for measuring lesson duration. |
