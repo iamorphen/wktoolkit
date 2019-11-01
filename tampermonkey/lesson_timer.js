@@ -11,7 +11,6 @@
 (function() {
   'use strict';
 
-  // TODO(orphen) Add persistent state for the configuration of the timer element.
   // TODO(orphen) Add total elapsed time to end-of-lesson page.
   // TODO(orphen) Save lesson timing statistics in persistent storage.
 
@@ -48,6 +47,10 @@
       document.getElementById(`${IDPrefix}-li`).innerHTML = `[${minutes} m ${seconds} s]`;
   };
 
+  /**
+   * An interface to a timer that allows the user to step through timer behaviors. Users must call nextBehavior() at
+   * least once to trigger a behavior from the list of managed behaviors.
+   */
   class TimerManager {
     instance = null; // This class is a non-extensible singleton.
 
@@ -61,6 +64,13 @@
       this.behaviors = behaviors;
       this.behaviorIndex = null;
       this.behaviorIntervalHandle = null;
+
+
+      // Load timer configuration from persistant storage.
+      const config = JSON.parse(localStorage.getItem(IDPrefix));
+      if (config) {
+        this.behaviorIndex = config.behaviorIndex - 1;
+      }
     }
 
     nextBehavior() {
@@ -74,6 +84,9 @@
       if (this.behaviors[this.behaviorIndex].recurring) {
         this.behaviorIntervalHandle = setInterval(this.behaviors[this.behaviorIndex].behavior, 1e3);
       }
+
+      // Save timer configuration to persistant storage.
+      localStorage.setItem(IDPrefix, JSON.stringify({behaviorIndex: this.behaviorIndex}));
     }
   };
 
