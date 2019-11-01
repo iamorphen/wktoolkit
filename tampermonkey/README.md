@@ -18,3 +18,4 @@ To ease local development of these scripts:
 | ------ | --- |
 | `context_sentence_blurrer` | Blurs the vocabulary context sentences in lessons. |
 | `lesson_timer` | A configurable timer for measuring lesson duration. |
+| `lesson_reorder` | [Incomplete.] Reorder subjects by type in lessons. |
