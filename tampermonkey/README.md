@@ -1,6 +1,8 @@
 # Tampermonkey Scripts
 Scripts in this directory are to be loaded by Tampermonkey and interact with the content on WaniKani.
 
+These scripts are developed and tested on Google Chrome (v. 78+) for Linux.
+
 # Dependencies
 * Modern Tampermonkey
 

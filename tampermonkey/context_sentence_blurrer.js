@@ -53,7 +53,7 @@
     }
   };
 
-  // The context sentences are dynamically loaded, so we have to poll for them.
+  // The context sentences are dynamically loaded, so we have to react to modifications of them.
   const observer = new MutationObserver(elementBlurFilter);
   observer.observe(document.getElementById('supplement-voc-context-sentence'), {
     childList: true,
