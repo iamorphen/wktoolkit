@@ -11,8 +11,9 @@
 (function() {
   'use strict';
 
-  // TODO(orphen) Add total elapsed time to end-of-lesson page.
   // TODO(orphen) Save lesson timing statistics in persistent storage.
+  // TODO(orphen) Refactor timer to enable freezing timer value in the UI when the user finishes the lesson and quiz.
+  //              Also support timer state querying to avoid showing timer value after the quiz if timer is "off."
 
   const IDPrefix = 'wktk-lesson-timer';
 
@@ -27,6 +28,16 @@
 
   const StartTime = Date.now();
 
+  /**
+   * @return The time since the lesson started formatted as "00 m 00 s".
+   */
+  const DeltaTime = () => {
+    const dt_s = (Date.now() - StartTime) / 1e3;
+    const seconds = Math.trunc(dt_s % 60).toString().padStart(2, 0);
+    const minutes = Math.trunc(dt_s / 60).toString().padStart(2, 0);
+    return `${minutes} m ${seconds} s`;
+  };
+
   class TimerBehavior {
     /**
      * @p behavior A function to invoke as the timer behavior.
@@ -40,12 +51,7 @@
 
   const TimerOff = () => { document.getElementById(`${IDPrefix}-li`).innerHTML = '[Timer Off]'; };
   const TimerHidden = () => { document.getElementById(`${IDPrefix}-li`).innerHTML = '[Timer Hidden]'; };
-  const TimerUpdate = () => {
-      let dt_s = (Date.now() - StartTime) / 1e3;
-      let seconds = Math.trunc(dt_s % 60).toString().padStart(2, 0);
-      let minutes = Math.trunc(dt_s / 60).toString().padStart(2, 0);
-      document.getElementById(`${IDPrefix}-li`).innerHTML = `[${minutes} m ${seconds} s]`;
-  };
+  const TimerUpdate = () => { document.getElementById(`${IDPrefix}-li`).innerHTML = `[${DeltaTime()}]`; };
 
   /**
    * An interface to a timer that allows the user to step through timer behaviors. Users must call nextBehavior() at
@@ -101,8 +107,27 @@
     document.getElementById(`${IDPrefix}-li`).onclick = event => { timer_manager.nextBehavior(); };
   };
 
+  /**
+   * Filters @p mutation_records for changes that suggest that the user has completed the quiz for a lesson. Then,
+   * adds the total lesson and quiz time to the post-quiz message.
+   * @p mutation_records a list of mutation records as provided by, for example, MutationObserver.
+   */
+  const TotalTimeDisplayFilter = mutation_records => {
+    for (const record of mutation_records) {
+      if (!record.target.classList.contains('hidden')) {
+        // The div is no longer hidden, suggesting that the user has finished the quiz.
+        let heading = record.target.querySelector('h1');
+        heading.insertAdjacentHTML('afterbegin', `Lesson finished in ${DeltaTime()}.<br><br>`);
+      }
+    }
+  };
+
   const timer_manager = new TimerManager([new TimerBehavior(TimerOff, false), new TimerBehavior(TimerHidden, false),
                                           new TimerBehavior(TimerUpdate, true)]);
   AddTimerElement(timer_manager);
   timer_manager.nextBehavior();
+
+  let observer = new MutationObserver(TotalTimeDisplayFilter);
+  observer.observe(document.getElementById('screen-lesson-ready'), { attributes: true });
+  observer.observe(document.getElementById('screen-lesson-done'), { attributes: true });
 })();
