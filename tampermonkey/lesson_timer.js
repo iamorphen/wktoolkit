@@ -31,7 +31,7 @@
   /**
    * @return The time since the lesson started formatted as "00 m 00 s".
    */
-  const DeltaTime = () => {
+  const FormatDeltaTime = () => {
     const dt_s = (Date.now() - StartTime) / 1e3;
     const seconds = Math.trunc(dt_s % 60).toString().padStart(2, 0);
     const minutes = Math.trunc(dt_s / 60).toString().padStart(2, 0);
@@ -51,7 +51,7 @@
 
   const TimerOff = () => { document.getElementById(`${IDPrefix}-li`).innerHTML = '[Timer Off]'; };
   const TimerHidden = () => { document.getElementById(`${IDPrefix}-li`).innerHTML = '[Timer Hidden]'; };
-  const TimerUpdate = () => { document.getElementById(`${IDPrefix}-li`).innerHTML = `[${DeltaTime()}]`; };
+  const TimerUpdate = () => { document.getElementById(`${IDPrefix}-li`).innerHTML = `[${FormatDeltaTime()}]`; };
 
   /**
    * An interface to a timer that allows the user to step through timer behaviors. Users must call nextBehavior() at
@@ -117,17 +117,21 @@
       if (!record.target.classList.contains('hidden')) {
         // The div is no longer hidden, suggesting that the user has finished the quiz.
         let heading = record.target.querySelector('h1');
-        heading.insertAdjacentHTML('afterbegin', `Lesson finished in ${DeltaTime()}.<br><br>`);
+        heading.insertAdjacentHTML('afterbegin', `Lesson finished in ${FormatDeltaTime()}.<br><br>`);
       }
     }
   };
 
-  const timer_manager = new TimerManager([new TimerBehavior(TimerOff, false), new TimerBehavior(TimerHidden, false),
-                                          new TimerBehavior(TimerUpdate, true)]);
-  AddTimerElement(timer_manager);
-  timer_manager.nextBehavior();
+  const Main = () => {
+    const timer_manager = new TimerManager([new TimerBehavior(TimerOff, false), new TimerBehavior(TimerHidden, false),
+                                            new TimerBehavior(TimerUpdate, true)]);
+    AddTimerElement(timer_manager);
+    timer_manager.nextBehavior();
 
-  let observer = new MutationObserver(TotalTimeDisplayFilter);
-  observer.observe(document.getElementById('screen-lesson-ready'), { attributes: true });
-  observer.observe(document.getElementById('screen-lesson-done'), { attributes: true });
+    let observer = new MutationObserver(TotalTimeDisplayFilter);
+    observer.observe(document.getElementById('screen-lesson-ready'), { attributes: true });
+    observer.observe(document.getElementById('screen-lesson-done'), { attributes: true });
+  };
+
+  Main();
 })();

@@ -1,7 +1,14 @@
 # Tampermonkey Scripts
 Scripts in this directory are to be loaded by Tampermonkey and interact with the content on WaniKani.
 
-These scripts are developed and tested on Google Chrome (v. 78+) for Linux.
+These scripts are developed and tested on Google Chrome (v. 78+) for GNU/Linux.
+
+# Format
+Most if not all scripts in this directory use the following general format and conventions:
+
+* `IDPrefix`: This const string acts as the script-unique prefix for things like local storage keys and HTML element classes and IDs.
+* HTML, CSS, Classes, Functions: The utilities of the script.
+* `Main()`: The runtime pseudo entry point of the script, written to show the general order of execution of the above utilities.
 
 # Dependencies
 * Modern Tampermonkey
