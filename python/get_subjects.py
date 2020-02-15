@@ -25,6 +25,8 @@ def handle_args():
   parser.add_argument('--level', help=('fetch subjects for this level [1-60]; '
                       'leave unspecified to fetch subjects for all levels'),
                       type=int, default=0)
+  parser.add_argument('--characters-only', help=('print the item\'s characters '
+                      'only and no other information'), action='store_true')
   group = parser.add_mutually_exclusive_group()
   group.add_argument('--original-json', help=('print original subject JSON to '
                      'stdout'), action='store_true')
@@ -66,7 +68,7 @@ def main():
       print(item.to_anki())
   else:
     for item in chain(subjects.radicals, subjects.kanji, subjects.vocabulary):
-      print(item)
+      print(item.as_characters() if args.characters_only else item)
 
 
 if __name__ == "__main__":

@@ -30,6 +30,7 @@ class Subject:
 
     data = item['data']
 
+    self.characters = None
     self.original_json = item if store_json else None  # Schema-ignored.
     self.id = item['id']
     self.document_url = data['document_url']
@@ -60,6 +61,12 @@ class Subject:
                                   ', '.join(self.aux_meanings),
                                   self.meaning_mnemonic))
     return s.replace('\r\n', ' ')
+
+  def as_characters(self):
+      """
+      @return (str) This item's characters.
+      """
+      return self.characters
 
   @staticmethod
   def anki_schema():
