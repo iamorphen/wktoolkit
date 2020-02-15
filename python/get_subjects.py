@@ -26,11 +26,11 @@ def handle_args():
                       'leave unspecified to fetch subjects for all levels'),
                       type=int, default=0)
   group = parser.add_mutually_exclusive_group()
-  group.add_argument('--original_json', help=('print original subject JSON to '
+  group.add_argument('--original-json', help=('print original subject JSON to '
                      'stdout'), action='store_true')
   group.add_argument('--anki', help=('print a tab-separated list of fields '
                      'per subject per line'), action='store_true')
-  group.add_argument('--anki_schema', help='print the Anki schema',
+  group.add_argument('--anki-schema', help='print the Anki schema',
                      action='store_true')
   parser.add_argument('user', help='the WaniKani username to transact as')
   return parser.parse_args()

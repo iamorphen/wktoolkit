@@ -57,7 +57,7 @@ def print_ranges(glyphs_per_line, verbose, ranges):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--glyphs_per_line', help='The number of glyphs per printed line',
+    parser.add_argument('--glyphs-per-line', help='The number of glyphs per printed line',
                         type=int, default=16)
     parser.add_argument('--verbose', help='Print code range titles and line-leading codes',
                         action='store_true')
